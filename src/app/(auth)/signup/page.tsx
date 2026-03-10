@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -53,18 +54,15 @@ export default function SignUpPage() {
   return (
     <div className="w-full max-w-sm">
       {/* Logo */}
-      <div className="mb-8 flex flex-col items-center">
-        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-sal-gold to-sal-gold-dim">
-          <span className="text-lg font-bold text-black">S</span>
-        </div>
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-base font-semibold text-sal-gold">
-            SaintSal
-          </span>
-          <span className="text-xs font-semibold uppercase tracking-wider text-sal-green">
-            LABS
-          </span>
-        </div>
+      <div className="mb-8 flex justify-center">
+        <Image
+          src="/images/logo-square.jpg"
+          alt="SaintSal Labs"
+          width={120}
+          height={120}
+          className="rounded-xl"
+          priority
+        />
       </div>
 
       {/* Card */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -88,27 +89,19 @@ export default function Sidebar() {
         )}
       >
         {/* ── Logo ─────────────────────────────────────────── */}
-        <div className="flex items-center gap-2 px-3 pb-2 pt-4">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-sal-gold to-sal-gold-dim">
-            <span className="text-sm font-bold text-black">S</span>
-          </div>
-          <div className="flex flex-col leading-none">
-            <div className="flex items-baseline gap-1">
-              <span className="text-sm font-semibold text-sal-gold">
-                SaintSal
-              </span>
-              <span className="text-2xs font-semibold uppercase tracking-wider text-sal-green">
-                LABS
-              </span>
-            </div>
-            <span className="text-[8px] tracking-wide text-sal-text-muted">
-              Responsible Intelligence
-            </span>
-          </div>
+        <div className="relative flex items-center justify-center px-3 pb-2 pt-4">
+          <Image
+            src="/images/logo-square.jpg"
+            alt="SaintSal Labs"
+            width={150}
+            height={150}
+            className="rounded-lg"
+            priority
+          />
           {/* Mobile close */}
           <button
             onClick={toggleSidebar}
-            className="ml-auto rounded p-0.5 text-sal-text-muted hover:text-sal-text md:hidden"
+            className="absolute right-2 top-3 rounded p-0.5 text-sal-text-muted hover:text-sal-text md:hidden"
           >
             <X size={14} />
           </button>

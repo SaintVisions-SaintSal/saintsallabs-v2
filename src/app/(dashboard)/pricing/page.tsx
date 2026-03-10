@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Check, Star } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { cn } from '@/lib/utils/cn';
@@ -11,21 +11,23 @@ import type { PlanTier } from '@/types';
 interface PricingTier {
   id: PlanTier;
   name: string;
-  price: string;
-  period: string;
+  monthlyPrice: number;
+  annualPrice: number;
   credits: string;
   modelAccess: string;
   popular?: boolean;
   features: string[];
   cta: 'current' | 'upgrade' | 'contact';
+  monthlyPriceId: string;
+  annualPriceId: string;
 }
 
 const TIERS: PricingTier[] = [
   {
     id: 'free',
     name: 'Free',
-    price: '$0',
-    period: 'forever',
+    monthlyPrice: 0,
+    annualPrice: 0,
     credits: '100',
     modelAccess: 'SAL Mini',
     features: [
@@ -35,12 +37,14 @@ const TIERS: PricingTier[] = [
       'Community support',
     ],
     cta: 'current',
+    monthlyPriceId: 'price_1T5bkAL47U80vDLAslOm3HoX',
+    annualPriceId: 'price_1T7p1tL47U80vDLAnxtkrGV4',
   },
   {
     id: 'starter',
     name: 'Starter',
-    price: '$9.99',
-    period: '/mo',
+    monthlyPrice: 27,
+    annualPrice: 270,
     credits: '500',
     modelAccess: 'SAL Pro',
     features: [
@@ -52,12 +56,14 @@ const TIERS: PricingTier[] = [
       'Email support',
     ],
     cta: 'upgrade',
+    monthlyPriceId: 'price_1T5bkAL47U80vDLAaChP4Hqg',
+    annualPriceId: 'price_1T7p1sL47U80vDLAYEEv8Kmg',
   },
   {
     id: 'pro',
     name: 'Pro',
-    price: '$29.99',
-    period: '/mo',
+    monthlyPrice: 97,
+    annualPrice: 970,
     credits: '2,000',
     modelAccess: 'SAL Max',
     popular: true,
@@ -72,12 +78,14 @@ const TIERS: PricingTier[] = [
       'Priority support',
     ],
     cta: 'upgrade',
+    monthlyPriceId: 'price_1T5bkBL47U80vDLALiVDkOgb',
+    annualPriceId: 'price_1T7p1tL47U80vDLAk5HK8YcR',
   },
   {
     id: 'teams',
     name: 'Teams',
-    price: '$79.99',
-    period: '/mo per seat',
+    monthlyPrice: 297,
+    annualPrice: 2970,
     credits: '10,000',
     modelAccess: 'SAL Max Fast',
     features: [
@@ -90,12 +98,14 @@ const TIERS: PricingTier[] = [
       'Custom integrations',
     ],
     cta: 'upgrade',
+    monthlyPriceId: 'price_1T5bkCL47U80vDLANsCa647K',
+    annualPriceId: 'price_1T7p1uL47U80vDLAjlnLTuul',
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 'Custom',
-    period: '',
+    monthlyPrice: 497,
+    annualPrice: 4970,
     credits: 'Unlimited',
     modelAccess: 'All Models',
     features: [
@@ -109,6 +119,8 @@ const TIERS: PricingTier[] = [
       'Custom model fine-tuning',
     ],
     cta: 'contact',
+    monthlyPriceId: 'price_1T5bkDL47U80vDLANXWF33A7',
+    annualPriceId: 'price_1T7p1uL47U80vDLAk9UA0lnr',
   },
 ];
 
@@ -117,27 +129,96 @@ const TIERS: PricingTier[] = [
 export default function PricingPage() {
   const setActivePage = useAppStore((s) => s.setActivePage);
   const userPlan = useAppStore((s) => s.user?.plan_tier ?? 'free');
+  const [annual, setAnnual] = useState(false);
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
   useEffect(() => {
     setActivePage('pricing');
   }, [setActivePage]);
 
+  const handleUpgrade = useCallback(
+    async (tier: PricingTier) => {
+      setLoadingTier(tier.id);
+      try {
+        const priceId = annual ? tier.annualPriceId : tier.monthlyPriceId;
+        const res = await fetch('/api/webhooks/stripe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'create-checkout',
+            priceId,
+            successUrl: `${window.location.origin}/pricing?success=true`,
+            cancelUrl: `${window.location.origin}/pricing`,
+          }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+      } finally {
+        setLoadingTier(null);
+      }
+    },
+    [annual],
+  );
+
   return (
     <div className="px-4 py-8 pb-32">
       {/* Heading */}
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold text-sal-text">
-          Choose Your Plan
-        </h1>
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-bold text-sal-text">Choose Your Plan</h1>
         <p className="mt-1 text-sm text-sal-text-muted">
           Scale your intelligence with SAL
         </p>
+      </div>
+
+      {/* Annual / Monthly toggle */}
+      <div className="mb-8 flex items-center justify-center gap-3">
+        <span
+          className={cn(
+            'text-xs font-medium',
+            !annual ? 'text-sal-text' : 'text-sal-text-muted',
+          )}
+        >
+          Monthly
+        </span>
+        <button
+          onClick={() => setAnnual((v) => !v)}
+          className={cn(
+            'relative h-6 w-11 rounded-full transition-colors',
+            annual ? 'bg-sal-gold' : 'bg-sal-border',
+          )}
+        >
+          <span
+            className={cn(
+              'absolute top-1 h-4 w-4 rounded-full bg-white transition-transform',
+              annual ? 'left-[22px]' : 'left-1',
+            )}
+          />
+        </button>
+        <span
+          className={cn(
+            'text-xs font-medium',
+            annual ? 'text-sal-text' : 'text-sal-text-muted',
+          )}
+        >
+          Annual
+        </span>
+        {annual && (
+          <span className="rounded-full bg-sal-green/15 px-2 py-0.5 text-[10px] font-bold text-sal-green">
+            Save ~17%
+          </span>
+        )}
       </div>
 
       {/* Tier grid */}
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {TIERS.map((tier) => {
           const isCurrent = userPlan === tier.id;
+          const price = annual ? tier.annualPrice : tier.monthlyPrice;
+          const isLoading = loadingTier === tier.id;
 
           return (
             <div
@@ -161,15 +242,27 @@ export default function PricingPage() {
 
               {/* Price */}
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-2xl font-bold text-sal-text">
-                  {tier.price}
-                </span>
-                {tier.period && (
-                  <span className="text-xs text-sal-text-muted">
-                    {tier.period}
-                  </span>
+                {price === 0 ? (
+                  <span className="text-2xl font-bold text-sal-text">$0</span>
+                ) : (
+                  <>
+                    <span className="text-2xl font-bold text-sal-text">
+                      ${annual ? Math.round(price / 12) : price}
+                    </span>
+                    <span className="text-xs text-sal-text-muted">/mo</span>
+                  </>
                 )}
               </div>
+              {annual && price > 0 && (
+                <div className="mt-0.5 text-[10px] text-sal-text-muted">
+                  ${price.toLocaleString()}/yr billed annually
+                </div>
+              )}
+              {!annual && price === 0 && (
+                <div className="mt-0.5 text-[10px] text-sal-text-muted">
+                  forever
+                </div>
+              )}
 
               {/* Credits & model access */}
               <div className="mt-3 space-y-1 border-b border-sal-border pb-3">
@@ -218,14 +311,16 @@ export default function PricingPage() {
                   </button>
                 ) : (
                   <button
+                    onClick={() => handleUpgrade(tier)}
+                    disabled={isLoading}
                     className={cn(
-                      'w-full rounded-md px-3 py-2 text-xs font-semibold transition-colors',
+                      'w-full rounded-md px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-60',
                       tier.popular
                         ? 'bg-sal-gold text-black hover:bg-sal-gold-hover'
                         : 'bg-sal-gold/10 text-sal-gold hover:bg-sal-gold/20',
                     )}
                   >
-                    Upgrade
+                    {isLoading ? 'Redirecting…' : 'Upgrade'}
                   </button>
                 )}
               </div>

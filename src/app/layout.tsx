@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   title: 'SaintSal Labs — Responsible Intelligence',
   description:
     'SAL is the AI research engine for SaintSal™ Labs, backed by US Patent #10,290,222 HACP Protocol. Search, sports, news, tech, finance, real estate, and medical intelligence.',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/images/icon-192.png',
+    apple: '/images/icon-512.png',
+  },
   openGraph: {
     title: 'SaintSal Labs',
     description:
@@ -32,6 +37,21 @@ export const metadata: Metadata = {
     siteName: 'SaintSal Labs',
     type: 'website',
     url: 'https://saintsallabs.com',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SaintSal Labs — Responsible Intelligence',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SaintSal Labs — Responsible Intelligence',
+    description:
+      'AI-powered search and vertical intelligence platform backed by US Patent #10,290,222.',
+    images: ['/images/og-image.jpg'],
   },
   appleWebApp: {
     capable: true,

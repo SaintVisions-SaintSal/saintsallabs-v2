@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Geist', system-ui, sans-serif; background: #0C0C0F; color: #E8E6E1; }
+
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #222228; border-radius: 3px; }
+
+input, textarea, select, button { font-family: 'Geist', sans-serif; }
+
+pre { white-space: pre-wrap; word-break: break-word; }
+
+.cursor::after {
+  content: "▊";
+  animation: blink 0.9s step-end infinite;
+  color: #F59E0B;
+  font-size: 0.8em;
+  margin-left: 1px;
+}
+
+@layer utilities {
+  .nav-btn { @apply transition-all duration-100 cursor-pointer border-none text-left; }
+  .card-hover { @apply transition-transform duration-150; }
+  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.45); }
+}

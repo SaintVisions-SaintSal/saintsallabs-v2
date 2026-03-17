@@ -12,10 +12,16 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 /* ─── Map Stripe price → plan tier ─────────────────────────── */
 
 const PRICE_TO_TIER: Record<string, PlanTier> = {
-  price_starter_monthly: 'starter',
-  price_pro_monthly: 'pro',
-  price_teams_monthly: 'teams',
-  price_enterprise_monthly: 'enterprise',
+  // Monthly
+  price_1T5bkAL47U80vDLAaChP4Hqg: 'starter',
+  price_1T5bkBL47U80vDLALiVDkOgb: 'pro',
+  price_1T5bkCL47U80vDLANsCa647K: 'teams',
+  price_1T5bkDL47U80vDLANXWF33A7: 'enterprise',
+  // Annual
+  price_1T7p1sL47U80vDLAYEEv8Kmg: 'starter',
+  price_1T7p1tL47U80vDLAk5HK8YcR: 'pro',
+  price_1T7p1uL47U80vDLAjlnLTuul: 'teams',
+  price_1T7p1uL47U80vDLAk9UA0lnr: 'enterprise',
 };
 
 const TIER_CREDITS: Record<PlanTier, number> = {
@@ -43,18 +49,17 @@ async function updateUserPlan(
 ) {
   const supabase = getAdminClient();
 
-  const { error } = await supabase
+  // Update profiles table
+  await supabase
     .from('profiles')
-    .update({
-      plan_tier: tier,
-      credits_remaining: TIER_CREDITS[tier],
-    })
+    .update({ plan_tier: tier, credits_remaining: TIER_CREDITS[tier] })
     .eq('stripe_customer_id', customerId);
 
-  if (error) {
-    console.error('Failed to update user plan:', error);
-    throw error;
-  }
+  // Also sync to user_profiles (shared table used by Labs iOS app)
+  await supabase
+    .from('user_profiles')
+    .update({ tier, compute_minutes_limit: TIER_CREDITS[tier] })
+    .eq('stripe_customer_id', customerId);
 }
 
 /* ─── Resolve tier from subscription ───────────────────────── */

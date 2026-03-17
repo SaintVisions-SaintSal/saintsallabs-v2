@@ -1,8 +1,16 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-02-25.clover',
-});
+// Lazy init — avoids build-time crash when env var not set
+let _stripe: Stripe | null = null;
+function getStripe() {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_placeholder', {
+      apiVersion: '2026-02-25.clover',
+    });
+  }
+  return _stripe;
+}
+const stripe = { get: getStripe };
 
 /* ─── Real Stripe Price IDs ────────────────────────────────── */
 
@@ -77,7 +85,7 @@ export async function createCheckoutSession({
     params.customer = customerId;
   }
 
-  const session = await stripe.checkout.sessions.create(params);
+  const session = await stripe.get().checkout.sessions.create(params);
 
   if (!session.url) {
     throw new Error('Stripe session created without URL');
@@ -92,7 +100,7 @@ export async function createPortalSession(
   customerId: string,
   returnUrl: string,
 ): Promise<string> {
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await stripe.get().billingPortal.sessions.create({
     customer: customerId,
     return_url: returnUrl,
   });

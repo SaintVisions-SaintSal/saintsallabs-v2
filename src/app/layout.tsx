@@ -22,42 +22,30 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'SaintSal Labs — Responsible Intelligence',
-  description:
-    'SAL is the AI research engine for SaintSal™ Labs, backed by US Patent #10,290,222 HACP Protocol. Search, sports, news, tech, finance, real estate, and medical intelligence.',
+  title: 'SaintSal™ Labs — Elite AI Intelligence Platform',
+  description: 'Research, build, and analyze across every vertical — powered by Claude, GPT, Gemini, and Grok. Your Gotta Guy™. US Patent #10,290,222.',
+  keywords: 'AI intelligence, real estate AI, finance AI, AI builder, GHL, SaintSal, HACP protocol, Patent 10290222',
+  authors: [{ name: 'Saint Vision Technologies LLC' }],
   manifest: '/manifest.json',
-  icons: {
-    icon: '/images/icon-192.png',
-    apple: '/images/icon-512.png',
-  },
+  icons: { icon: '/helmet.png', apple: '/helmet.png' },
   openGraph: {
-    title: 'SaintSal Labs',
-    description:
-      'Responsible Intelligence — AI-powered search and vertical intelligence platform.',
-    siteName: 'SaintSal Labs',
+    title: 'SaintSal™ Labs — Your Gotta Guy™ Is Ready',
+    description: 'Claude + GPT + Gemini + Grok. Research, build, analyze, automate. Patent #10,290,222.',
+    siteName: 'SaintSal™ Labs',
     type: 'website',
     url: 'https://saintsallabs.com',
-    images: [
-      {
-        url: '/images/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'SaintSal Labs — Responsible Intelligence',
-      },
-    ],
+    images: [{ url: '/helmet.png', width: 1024, height: 1024, alt: 'SaintSal Labs' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SaintSal Labs — Responsible Intelligence',
-    description:
-      'AI-powered search and vertical intelligence platform backed by US Patent #10,290,222.',
-    images: ['/images/og-image.jpg'],
+    title: 'SaintSal™ Labs — Elite AI Platform',
+    description: 'Powered by Patent #10,290,222 HACP Protocol. Claude + GPT + Gemini + Grok.',
+    images: ['/helmet.png'],
+    creator: '@saintsallabs',
   },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'SaintSal Labs',
-  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://saintsallabs.com' },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'SaintSal Labs' },
 };
 
 export default function RootLayout({
@@ -67,9 +55,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-      >
+      <head>
+        {/* GA4 — SaintSal Labs */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXXXXXXX', {
+            page_title: document.title,
+            page_location: window.location.href,
+            send_page_view: true,
+          });
+        `}} />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

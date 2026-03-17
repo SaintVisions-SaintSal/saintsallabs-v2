@@ -56,6 +56,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Google Search Console verification */}
+        <meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE" />
         {/* GA4 — SaintSal Labs */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX" />
         <script dangerouslySetInnerHTML={{ __html: `

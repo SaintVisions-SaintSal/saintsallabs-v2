@@ -445,18 +445,27 @@ export default function LandingPage() {
               </div>
               <p style={{fontSize:13,color:'rgba(255,255,255,0.3)',lineHeight:1.8,maxWidth:280}}>The AI that actually shows up. Powered by Patented HACP™ Technology. US Patent #10,290,222.</p>
             </div>
-            {[
-              {title:'Platform',links:['Intelligence','Builder','Social Studio','GHL Bridge','Pricing']},
-              {title:'Company',links:['About','Blog','Careers','Patent','Contact']},
-              {title:'Legal',links:['Privacy Policy','Terms of Service','HIPAA BAA','Cookie Policy']},
-            ].map(col=>(
-              <div key={col.title}>
-                <p style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:'uppercase',color:GOLD,marginBottom:20,opacity:0.7}}>{col.title}</p>
-                <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                  {col.links.map(l=><a key={l} href="#" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>{l}</a>)}
-                </div>
+            <div>
+              <p style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:'uppercase',color:GOLD,marginBottom:20,opacity:0.7}}>Platform</p>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                {['Intelligence','Builder','Social Studio','GHL Bridge','Pricing'].map(l=><a key={l} href="#" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>{l}</a>)}
               </div>
-            ))}
+            </div>
+            <div>
+              <p style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:'uppercase',color:GOLD,marginBottom:20,opacity:0.7}}>Company</p>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                {['About','Blog','Careers','Patent','Contact'].map(l=><a key={l} href="#" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>{l}</a>)}
+              </div>
+            </div>
+            <div>
+              <p style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:'uppercase',color:GOLD,marginBottom:20,opacity:0.7}}>Legal</p>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                <Link href="/privacy" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>Privacy Policy</Link>
+                <Link href="/terms" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>Terms of Service</Link>
+                <a href="mailto:legal@saintsallabs.com" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>HIPAA BAA</a>
+                <a href="mailto:legal@saintsallabs.com" style={{fontSize:13,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>Contact Legal</a>
+              </div>
+            </div>
           </div>
           <div style={{borderTop:'1px solid rgba(212,175,55,0.06)',paddingTop:32,display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
             <p style={{fontSize:12,color:'rgba(255,255,255,0.2)'}}>© 2026 Saint Vision Technologies LLC · All rights reserved · US Patent #10,290,222</p>

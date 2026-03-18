@@ -121,10 +121,46 @@ export default function LandingPage() {
 
         /* VH CHECK */
         .vh-check{width:22px;height:22px;background:linear-gradient(135deg,#D4AF37,#8A7129);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#080808;font-weight:800;}
+
+        /* SECTION PADDING — responsive */
+        .sec-pad{padding:100px 80px;}
+        @media(max-width:900px){.sec-pad{padding:70px 40px;}}
+        @media(max-width:600px){.sec-pad{padding:56px 20px;}}
+
+        /* HERO */
+        .hero-section{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding-top:130px;position:relative;overflow:hidden;}
+        @media(max-width:768px){.hero-section{grid-template-columns:1fr;min-height:auto;padding-top:100px;padding-bottom:60px;}}
+        .hero-left{position:relative;z-index:5;padding:80px 60px 80px 80px;display:flex;flex-direction:column;gap:26px;}
+        @media(max-width:900px){.hero-left{padding:60px 40px;}}
+        @media(max-width:600px){.hero-left{padding:40px 20px;gap:20px;}}
+        .hero-right{position:relative;height:100vh;overflow:hidden;background:linear-gradient(135deg,rgba(212,175,55,0.05),rgba(0,0,0,0));display:flex;align-items:center;justify-content:center;}
+        @media(max-width:768px){.hero-right{display:none;}}
+        .hero-stats{display:flex;gap:36px;padding-top:18px;border-top:1px solid rgba(212,175,55,0.1);flex-wrap:wrap;}
+        @media(max-width:600px){.hero-stats{gap:20px;}}
+
+        /* PARTNERS (affiliate) GRID */
+        .partners-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+        @media(max-width:900px){.partners-grid{grid-template-columns:1fr;gap:40px;}}
+        .partners-num{font-family:'Bebas Neue',sans-serif;font-size:120px;color:#D4AF37;line-height:1;filter:drop-shadow(0 0 40px rgba(212,175,55,0.3));}
+        @media(max-width:600px){.partners-num{font-size:80px;}}
+
+        /* FOOTER GRID */
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:60px;}
+        @media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;gap:32px;}}
+        @media(max-width:500px){.footer-grid{grid-template-columns:1fr;gap:28px;}}
+
+        /* HB BANNER */
+        .hb-banner{background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.08));border-bottom:1px solid rgba(212,175,55,0.3);padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
+
+        /* CTA SECTION */
+        .cta-section{position:relative;overflow:hidden;padding:140px 80px;text-align:center;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(212,175,55,0.12) 0%,transparent 70%);}
+        @media(max-width:600px){.cta-section{padding:80px 20px;}}
+        .cta-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+        @media(max-width:500px){.cta-btns .btn-gold,.cta-btns .btn-out{width:100%;text-align:center;padding:16px 24px;font-size:18px;}}
       `}</style>
 
       {/* HB Locals Banner */}
-      <div style={{background:'linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.08))',borderBottom:'1px solid rgba(212,175,55,0.3)',padding:'10px 24px',display:'flex',alignItems:'center',justifyContent:'center',gap:16,flexWrap:'wrap'}}>
+      <div className="hb-banner">
         <span style={{fontSize:13,fontWeight:700,color:'rgba(255,255,255,0.85)',letterSpacing:0.5}}>🏄 <strong style={{color:GOLD}}>HB Locals — Surf City Night Tonight!</strong> &nbsp;20% off first month with code</span>
         <span style={{background:'linear-gradient(135deg,#D4AF37,#8A7129)',color:'#080808',padding:'4px 12px',borderRadius:4,fontFamily:'Bebas Neue,sans-serif',fontSize:16,letterSpacing:3}}>HBLOCAL</span>
         <span style={{fontSize:13,fontWeight:700,color:'rgba(255,255,255,0.85)'}}>at <strong style={{color:GOLD}}>saintsallabs.com</strong> &nbsp;·&nbsp; 221 Main St Suite J</span>
@@ -151,11 +187,11 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section style={{minHeight:'100vh',display:'grid',gridTemplateColumns:'1fr 1fr',alignItems:'center',paddingTop:130,position:'relative',overflow:'hidden'}}>
+      <section className="hero-section">
         <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse 60% 80% at 0% 50%,rgba(212,175,55,0.09) 0%,transparent 60%),#080808'}} />
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(212,175,55,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,0.03) 1px,transparent 1px)',backgroundSize:'80px 80px'}} />
 
-        <div style={{position:'relative',zIndex:5,padding:'80px 60px 80px 80px',display:'flex',flexDirection:'column',gap:26}}>
+        <div className="hero-left">
           {/* Live badge */}
           <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(0,255,136,0.08)',border:'1px solid rgba(0,255,136,0.2)',padding:'6px 14px',borderRadius:999,width:'fit-content'}}>
             <div style={{width:6,height:6,background:'#00FF88',borderRadius:'50%',animation:'livePulse 1.5s infinite'}} />
@@ -179,7 +215,7 @@ export default function LandingPage() {
             <button className="btn-out" onClick={()=>scrollTo('snapshots')}>View GHL Snapshots →</button>
           </div>
 
-          <div style={{display:'flex',gap:36,paddingTop:18,borderTop:'1px solid rgba(212,175,55,0.1)'}}>
+          <div className="hero-stats">
             {[['9','AI Verticals'],['53','AI Models'],['88','Connectors'],['175+','Countries']].map(([n,l])=>(
               <div key={l} style={{display:'flex',flexDirection:'column',gap:3}}>
                 <span className="bebas" style={{fontSize:36,color:GOLD,lineHeight:1,filter:'drop-shadow(0 0 10px rgba(212,175,55,0.3))'}}>
@@ -191,8 +227,8 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Hero right — gradient + patent pill */}
-        <div style={{position:'relative',height:'100vh',overflow:'hidden',background:'linear-gradient(135deg,rgba(212,175,55,0.05),rgba(0,0,0,0))',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        {/* Hero right — hidden on mobile */}
+        <div className="hero-right">
           <Image src="/helmet.png" alt="SAL" width={480} height={480}
             style={{objectFit:'contain',filter:'drop-shadow(0 0 80px rgba(212,175,55,0.4)) drop-shadow(0 0 160px rgba(212,175,55,0.2))',opacity:0.9}} />
           <div style={{position:'absolute',inset:0,background:'linear-gradient(to right,#080808 0%,transparent 45%),linear-gradient(to top,#080808 0%,transparent 35%)'}} />
@@ -213,7 +249,7 @@ export default function LandingPage() {
 
       {/* WHY WE WIN */}
       <div id="why" style={{background:'#080808'}}>
-        <div style={{padding:'100px 80px',maxWidth:1400,margin:'0 auto'}}>
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
           <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>Why Switch To SaintSal™ Labs</p>
           <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95,marginBottom:56}}>
             STOP PAYING FOR<br/><span style={{color:GOLD}}>12 TOOLS. USE ONE.</span>
@@ -236,8 +272,8 @@ export default function LandingPage() {
       </div>
 
       {/* ONE PRICE, FULL EMPIRE */}
-      <div style={{background:'linear-gradient(180deg,transparent,rgba(212,175,55,0.03),transparent)',borderTop:'1px solid rgba(212,175,55,0.07)',borderBottom:'1px solid rgba(212,175,55,0.07)',padding:'100px 80px'}}>
-        <div style={{maxWidth:1400,margin:'0 auto'}}>
+      <div style={{background:'linear-gradient(180deg,transparent,rgba(212,175,55,0.03),transparent)',borderTop:'1px solid rgba(212,175,55,0.07)',borderBottom:'1px solid rgba(212,175,55,0.07)'}}>
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
           <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>One Subscription. Full Empire.</p>
           <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95,marginBottom:40}}>
             $97/MO GETS YOU<br/><span style={{color:GOLD}}>EVERYTHING.</span>
@@ -292,8 +328,8 @@ export default function LandingPage() {
       </div>
 
       {/* INTELLIGENCE VERTICALS */}
-      <div id="verticals" style={{padding:'100px 80px'}}>
-        <div style={{maxWidth:1400,margin:'0 auto'}}>
+      <div id="verticals">
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
           <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>Intelligence Verticals</p>
           <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95,marginBottom:56}}>
             EVERY DOMAIN.<br/><span style={{color:GOLD}}>ONE PLATFORM.</span>
@@ -319,7 +355,8 @@ export default function LandingPage() {
       </div>
 
       {/* GHL SNAPSHOTS */}
-      <div id="snapshots" style={{padding:'100px 80px',maxWidth:1400,margin:'0 auto'}}>
+      <div id="snapshots">
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
         <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>GHL Snapshot Systems</p>
         <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95,marginBottom:20}}>
           DONE-FOR-YOU.<br/><span style={{color:GOLD}}>DEPLOY IN MINUTES.</span>
@@ -347,11 +384,12 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
+        </div>
       </div>
 
       {/* COOKINPARTNERS AFFILIATE */}
-      <div id="partners" style={{background:'linear-gradient(135deg,rgba(212,175,55,0.06),rgba(212,175,55,0.02))',borderTop:'1px solid rgba(212,175,55,0.1)',borderBottom:'1px solid rgba(212,175,55,0.1)',padding:'100px 80px'}}>
-        <div style={{maxWidth:1400,margin:'0 auto',display:'grid',gridTemplateColumns:'1fr 1fr',gap:80,alignItems:'center'}}>
+      <div id="partners" style={{background:'linear-gradient(135deg,rgba(212,175,55,0.06),rgba(212,175,55,0.02))',borderTop:'1px solid rgba(212,175,55,0.1)',borderBottom:'1px solid rgba(212,175,55,0.1)'}}>
+        <div className="sec-pad partners-grid">
           <div>
             <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>CookinPartners™ Affiliate Program</p>
             <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95,marginBottom:24}}>
@@ -367,7 +405,7 @@ export default function LandingPage() {
             <Link href="/login" className="btn-gold">Join CookinPartners™ →</Link>
           </div>
           <div style={{textAlign:'center'}}>
-            <div className="bebas" style={{fontSize:120,color:GOLD,lineHeight:1,filter:'drop-shadow(0 0 40px rgba(212,175,55,0.3))'}}>15%</div>
+            <div className="bebas partners-num">15%</div>
             <div className="bebas" style={{fontSize:20,letterSpacing:4,color:'rgba(255,255,255,0.4)'}}>RECURRING · FOREVER</div>
             <p style={{fontSize:13,color:'rgba(255,255,255,0.35)',marginTop:12,lineHeight:1.7}}>Refer one Pro subscriber ($97/mo) and earn $14.55/mo — forever. Ten referrals = $145.50/mo passive.</p>
           </div>
@@ -375,8 +413,8 @@ export default function LandingPage() {
       </div>
 
       {/* PRICING */}
-      <div id="pricing" style={{padding:'100px 80px',background:'#080808'}}>
-        <div style={{maxWidth:1400,margin:'0 auto'}}>
+      <div id="pricing" style={{background:'#080808'}}>
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
           <p style={{fontSize:11,fontWeight:700,letterSpacing:4,textTransform:'uppercase',color:GOLD,marginBottom:14}}>Pricing</p>
           <h2 className="bebas" style={{fontSize:'clamp(44px,5vw,68px)',lineHeight:0.95}}>
             START FREE.<br/><span style={{color:GOLD}}>SCALE WHEN READY.</span>
@@ -413,7 +451,7 @@ export default function LandingPage() {
       </div>
 
       {/* CTA SECTION */}
-      <div style={{position:'relative',overflow:'hidden',padding:'140px 80px',textAlign:'center',background:'radial-gradient(ellipse 80% 60% at 50% 50%,rgba(212,175,55,0.12) 0%,transparent 70%)'}}>
+      <div className="cta-section">
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(212,175,55,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px'}} />
         <div style={{position:'relative',zIndex:5,display:'flex',flexDirection:'column',alignItems:'center',gap:28}}>
           <Image src="/helmet.png" alt="SAL" width={180} height={180} className="cta-logo"
@@ -426,7 +464,7 @@ export default function LandingPage() {
           <p style={{fontSize:18,color:'rgba(255,255,255,0.5)',maxWidth:560,lineHeight:1.7}}>
             Join thousands building empires with SAL Labs. One login. Every tool. Patent-protected intelligence.
           </p>
-          <div style={{display:'flex',gap:16,flexWrap:'wrap',justifyContent:'center'}}>
+          <div className="cta-btns">
             <Link href="/login" className="btn-gold" style={{fontSize:22,padding:'20px 48px'}}>⚡ Start Free Today</Link>
             <Link href="/app-clip" className="btn-out" style={{fontSize:22,padding:'20px 48px'}}>📱 Get App Clip</Link>
           </div>
@@ -435,9 +473,9 @@ export default function LandingPage() {
       </div>
 
       {/* FOOTER */}
-      <footer style={{background:'#050505',borderTop:'1px solid rgba(212,175,55,0.08)',padding:'60px 80px 40px'}}>
-        <div style={{maxWidth:1400,margin:'0 auto'}}>
-          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',gap:40,marginBottom:60}}>
+      <footer style={{background:'#050505',borderTop:'1px solid rgba(212,175,55,0.08)'}}>
+        <div className="sec-pad" style={{maxWidth:1400,margin:'0 auto'}}>
+          <div className="footer-grid">
             <div>
               <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
                 <Image src="/helmet.png" alt="SAL" width={40} height={40} style={{objectFit:'contain',filter:'drop-shadow(0 0 8px rgba(212,175,55,0.4))'}} />

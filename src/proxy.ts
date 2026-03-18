@@ -12,7 +12,7 @@ const PUBLIC_PATHS = [
   '/app-clip',
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip static files and API routes

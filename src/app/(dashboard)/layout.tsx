@@ -17,6 +17,11 @@ export default function DashboardLayout({
   const router = useRouter();
   const { activePage } = useAppStore();
 
+  // Ensure profiles row exists (idempotent — safe to call every session)
+  useEffect(() => {
+    fetch('/api/auth/profile-init', { method: 'POST' }).catch(() => {});
+  }, []);
+
   // Silent warmup: ping the SAL engine so it's awake for first user message
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;

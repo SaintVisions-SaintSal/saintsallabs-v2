@@ -1,15 +1,17 @@
 import { Resend } from 'resend'
 import { welcomeEmailHTML, supabaseVerifyEmailHTML, snapshotPurchasedEmailHTML } from './templates'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const FROM = 'SaintSal™ Labs <support@cookin.io>'
 const REPLY_TO = 'support@cookin.io'
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 /* ─── Send welcome email on signup / upgrade ─── */
 export async function sendWelcomeEmail(to: string, name: string, tier: string) {
   if (!process.env.RESEND_API_KEY) return
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     replyTo: REPLY_TO,
     to,
@@ -23,7 +25,7 @@ export async function sendWelcomeEmail(to: string, name: string, tier: string) {
 /* ─── Send OTP / verify email (called from Supabase custom SMTP or API) ─── */
 export async function sendVerifyEmail(to: string, otpCode: string) {
   if (!process.env.RESEND_API_KEY) return
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     replyTo: REPLY_TO,
     to,
@@ -35,7 +37,7 @@ export async function sendVerifyEmail(to: string, otpCode: string) {
 /* ─── Send snapshot purchase confirmation ─── */
 export async function sendSnapshotEmail(to: string, name: string, snapshotKey: string) {
   if (!process.env.RESEND_API_KEY) return
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     replyTo: REPLY_TO,
     to,

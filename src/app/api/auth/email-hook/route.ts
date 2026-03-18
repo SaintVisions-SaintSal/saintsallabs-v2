@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabaseVerifyEmailHTML, welcomeEmailHTML } from '@/lib/email/templates'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY)
 const FROM    = 'SaintSal™ Labs <support@cookin.io>'
 const REPLY_TO = 'support@cookin.io'
 const APP_URL  = process.env.NEXT_PUBLIC_APP_URL ?? 'https://saintsallabs.com'
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
   try {
     if (actionType === 'signup' || actionType === 'email_change') {
       // OTP verification code
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM,
         replyTo: REPLY_TO,
         to: email,
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
       // Also fire welcome email alongside the OTP for new signups
       if (actionType === 'signup') {
         // Fire async — don't await so hook returns fast
-        resend.emails.send({
+        getResend().emails.send({
           from: FROM,
           replyTo: REPLY_TO,
           to: email,
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       const tokenHash = emailData?.token_hash ?? ''
       const confirmUrl = `${emailData?.site_url ?? APP_URL}/auth/v1/verify?token=${tokenHash}&type=magiclink&redirect_to=${encodeURIComponent(emailData?.redirect_to ?? APP_URL + '/chat/search')}`
 
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM,
         replyTo: REPLY_TO,
         to: email,
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
       const tokenHash = emailData?.token_hash ?? ''
       const confirmUrl = `${emailData?.site_url ?? APP_URL}/auth/v1/verify?token=${tokenHash}&type=recovery&redirect_to=${encodeURIComponent(APP_URL + '/reset-password')}`
 
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM,
         replyTo: REPLY_TO,
         to: email,
@@ -197,7 +197,7 @@ export async function POST(req: NextRequest) {
       const tokenHash = emailData?.token_hash ?? ''
       const confirmUrl = `${emailData?.site_url ?? APP_URL}/auth/v1/verify?token=${tokenHash}&type=invite&redirect_to=${encodeURIComponent(APP_URL + '/chat/search')}`
 
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM,
         replyTo: REPLY_TO,
         to: email,

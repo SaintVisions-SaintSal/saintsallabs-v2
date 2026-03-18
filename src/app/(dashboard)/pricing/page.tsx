@@ -141,15 +141,10 @@ export default function PricingPage() {
       setLoadingTier(tier.id);
       try {
         const priceId = annual ? tier.annualPriceId : tier.monthlyPriceId;
-        const res = await fetch('/api/webhooks/stripe', {
+        const res = await fetch('/api/checkout/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'create-checkout',
-            priceId,
-            successUrl: `${window.location.origin}/pricing?success=true`,
-            cancelUrl: `${window.location.origin}/pricing`,
-          }),
+          body: JSON.stringify({ priceId, annual }),
         });
         const data = await res.json();
         if (data.url) {

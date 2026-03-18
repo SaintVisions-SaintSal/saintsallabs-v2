@@ -1,11 +1,35 @@
 import { NextRequest } from 'next/server';
-
-export const runtime = 'edge';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { checkAndMeter } from '@/lib/sal-admin';
 
 /* ─── Gemini streaming chat — primary AI backend ─────────────── */
 
 export async function POST(req: NextRequest) {
   try {
+    // Auth + metering
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+    );
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const meter = await checkAndMeter(user.id);
+    if (!meter.allowed) {
+      return new Response(
+        JSON.stringify({ error: meter.error || 'Request limit reached', upgrade: '/pricing' }),
+        { status: 402, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { messages, systemPrompt, model } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
@@ -16,11 +40,14 @@ export async function POST(req: NextRequest) {
     const geminiKey = process.env.GEMINI_API_KEY;
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
+    // Use compute_tier from DB to pick model unless client overrides
+    const resolvedModel = model || tierToModel(meter.compute_tier);
+
     if (geminiKey) {
-      return streamGemini({ messages, systemPrompt, model, apiKey: geminiKey });
+      return streamGemini({ messages, systemPrompt, model: resolvedModel, apiKey: geminiKey });
     }
     if (anthropicKey) {
-      return streamAnthropic({ messages, systemPrompt, model, apiKey: anthropicKey });
+      return streamAnthropic({ messages, systemPrompt, model: resolvedModel, apiKey: anthropicKey });
     }
 
     return new Response('No AI API key configured (GEMINI_API_KEY or ANTHROPIC_API_KEY)', {
@@ -30,6 +57,16 @@ export async function POST(req: NextRequest) {
     const message = err instanceof Error ? err.message : 'Internal server error';
     return new Response(message, { status: 500 });
   }
+}
+
+function tierToModel(computeTier: string): string {
+  const map: Record<string, string> = {
+    mini:     'SAL Mini',
+    pro:      'SAL Pro',
+    max:      'SAL Max',
+    max_fast: 'SAL Max Fast',
+  };
+  return map[computeTier] ?? 'SAL Mini';
 }
 
 /* ─── Gemini streaming ───────────────────────────────────────── */

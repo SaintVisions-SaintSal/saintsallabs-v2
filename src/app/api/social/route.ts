@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { checkAndMeter } from '@/lib/sal-admin';
 
 interface PlatformInput {
   id: string;
@@ -18,6 +21,26 @@ interface GeneratedPost {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth + metering
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  const meter = await checkAndMeter(user.id);
+  if (!meter.allowed) {
+    return NextResponse.json(
+      { error: meter.error || 'Request limit reached', upgrade: '/pricing' },
+      { status: 402 }
+    );
+  }
+
   const geminiKey = process.env.GEMINI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 

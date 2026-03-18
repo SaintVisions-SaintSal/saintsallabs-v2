@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { checkAndMeter } from '@/lib/sal-admin';
 import { BUILDER_SYSTEM_PROMPT } from '@/config/verticals';
-
-export const runtime = 'edge';
 
 interface BuilderRequestBody {
   prompt: string;
@@ -10,6 +11,29 @@ interface BuilderRequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth + metering
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const meter = await checkAndMeter(user.id);
+  if (!meter.allowed) {
+    return new Response(
+      JSON.stringify({ error: meter.error || 'Request limit reached', upgrade: '/pricing' }),
+      { status: 402, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   const geminiKey = process.env.GEMINI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
@@ -51,16 +75,19 @@ IMPORTANT: Return all code files as markdown code blocks with filenames. Example
 // code here
 \`\`\``;
 
+  // Pro+ gets gemini-2.5-pro, mini gets flash
+  const useProModel = meter.compute_tier !== 'mini';
+
   if (geminiKey) {
-    return streamGeminiBuilder(userMessage, geminiKey);
+    return streamGeminiBuilder(userMessage, geminiKey, useProModel);
   }
-  return streamAnthropicBuilder(userMessage, anthropicKey!);
+  return streamAnthropicBuilder(userMessage, anthropicKey!, useProModel);
 }
 
 /* ─── Gemini streaming ───────────────────────────────────────── */
 
-async function streamGeminiBuilder(userMessage: string, apiKey: string) {
-  const model = 'gemini-2.5-pro-preview-06-05';
+async function streamGeminiBuilder(userMessage: string, apiKey: string, pro: boolean) {
+  const model = pro ? 'gemini-2.5-pro-preview-06-05' : 'gemini-2.0-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
   const response = await fetch(url, {
@@ -143,7 +170,8 @@ async function streamGeminiBuilder(userMessage: string, apiKey: string) {
 
 /* ─── Anthropic streaming (fallback) ─────────────────────────── */
 
-async function streamAnthropicBuilder(userMessage: string, apiKey: string) {
+async function streamAnthropicBuilder(userMessage: string, apiKey: string, pro: boolean) {
+  const model = pro ? 'claude-sonnet-4-6-20250514' : 'claude-haiku-4-5-20251001';
   const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -152,7 +180,7 @@ async function streamAnthropicBuilder(userMessage: string, apiKey: string) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6-20250514',
+      model,
       max_tokens: 8192,
       stream: true,
       system: BUILDER_SYSTEM_PROMPT,

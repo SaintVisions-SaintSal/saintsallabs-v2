@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Service-role client — server only, never expose to browser
+// Fallback strings prevent build-time crash when env vars are missing;
+// runtime requests will fail with auth errors if keys are not set.
 export const adminSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_KEY ?? 'placeholder-service-key',
   { auth: { persistSession: false } }
 )
 

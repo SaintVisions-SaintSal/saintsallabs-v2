@@ -65,13 +65,16 @@ export default function Sidebar() {
     useAppStore();
   const gate = usePlanGate();
 
+  const closeSidebarMobile = useCallback(() => {
+    if (window.innerWidth < 768 && sidebarOpen) toggleSidebar();
+  }, [sidebarOpen, toggleSidebar]);
+
   const handleNav = useCallback(
     (id: string) => {
       setActivePage(id);
-      // close sidebar on mobile
-      if (window.innerWidth < 768) toggleSidebar();
+      closeSidebarMobile();
     },
-    [setActivePage, toggleSidebar],
+    [setActivePage, closeSidebarMobile],
   );
 
   return (
@@ -136,7 +139,10 @@ export default function Sidebar() {
                   <Link
                     key={item.id}
                     href={href}
-                    onClick={() => !locked && handleNav(item.id)}
+                    onClick={() => {
+                      closeSidebarMobile();
+                      if (!locked) setActivePage(item.id);
+                    }}
                     title={locked ? `Requires upgrade — click to see plans` : undefined}
                     className={cn(
                       'nav-btn group flex w-full items-center gap-2 rounded-md px-2 py-[5px] text-xs',

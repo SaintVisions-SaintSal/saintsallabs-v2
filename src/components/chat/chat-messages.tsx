@@ -153,7 +153,7 @@ export default function ChatMessages({
   return (
     <div
       ref={scrollRef}
-      className="flex-1 overflow-y-auto px-4 pb-36 pt-4"
+      className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4"
     >
       <div className="mx-auto max-w-2xl">
         {isEmpty ? (

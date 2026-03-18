@@ -110,12 +110,12 @@ export default function InputBar({ onSend }: InputBarProps) {
   );
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30">
+    <div className="w-full shrink-0">
       {/* Gradient fade */}
-      <div className="h-16 bg-gradient-to-t from-sal-bg to-transparent" />
+      <div className="pointer-events-none h-8 bg-gradient-to-t from-sal-bg to-transparent" />
 
       {/* Input container */}
-      <div className="pointer-events-auto bg-sal-bg px-3 pb-3">
+      <div className="bg-sal-bg px-3 pb-3">
         <div className="relative mx-auto max-w-2xl">
           {/* Model selector dropdown */}
           {showModels && (
@@ -213,3 +213,4 @@ export default function InputBar({ onSend }: InputBarProps) {
     </div>
   );
 }
+

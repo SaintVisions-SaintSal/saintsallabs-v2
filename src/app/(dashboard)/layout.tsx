@@ -54,9 +54,16 @@ export default function DashboardLayout({
         <Header />
         <Ticker />
 
-        {/* Main content area — relative for InputBar overlay */}
-        <main className="relative flex-1 overflow-y-auto">
-          {children}
+        {/* Main content area */}
+        <main className="flex flex-1 flex-col overflow-hidden">
+          {/* Chat pages manage their own internal scroll; non-chat pages scroll here */}
+          <div className={
+            isChatPage
+              ? 'relative flex flex-1 flex-col overflow-hidden'
+              : 'relative flex-1 overflow-y-auto'
+          }>
+            {children}
+          </div>
           {!isChatPage && <InputBar onSend={handleSend} />}
         </main>
       </div>

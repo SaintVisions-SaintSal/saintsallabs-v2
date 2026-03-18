@@ -123,10 +123,10 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
   const remaining = gate.dailyRemaining as number;
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       {/* Free tier usage bar */}
       {isFreeLimited && (
-        <div className="flex items-center justify-between border-b border-sal-border bg-sal-surface2 px-4 py-1.5">
+        <div className="flex shrink-0 items-center justify-between border-b border-sal-border bg-sal-surface2 px-4 py-1.5">
           <span className="text-[11px] text-sal-text-muted">
             <span className="font-semibold text-sal-text">{remaining}</span> free messages remaining today
           </span>
@@ -143,6 +143,6 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
         onPrompt={handleSend}
       />
       <InputBar onSend={handleSend} />
-    </>
+    </div>
   );
 }

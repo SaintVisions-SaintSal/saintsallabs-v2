@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { Message, Vertical } from '@/types';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { salStream } from '@/lib/ai/stream';
 import { useAppStore } from '@/stores/app-store';
 import ChatMessages from './chat-messages';
 import InputBar from '@/components/layout/input-bar';
-
-const WARMUP_MSG = '⚡ AI backend is warming up — retrying in a moment…';
 
 /* ─── Props ────────────────────────────────────────────────── */
 
@@ -21,13 +19,9 @@ interface ChatContainerProps {
 export default function ChatContainer({ vertical }: ChatContainerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const abortRef = useRef<AbortController | null>(null);
-  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { model } = useAppStore();
 
   const config = VERTICAL_CONFIG[vertical];
-
-  // Cleanup retry timer on unmount
-  useEffect(() => () => { if (retryRef.current) clearTimeout(retryRef.current); }, []);
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -85,15 +79,14 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
         if ((err as Error).name === 'AbortError') return;
 
         const rawMsg = (err as Error).message ?? '';
-        // Detect Render cold-start / 503 — auto-retry once after 20s
+        // Detect Render cold-start (503/502) — show friendly warmup message
         const isWarmup =
           rawMsg.includes('503') ||
           rawMsg.includes('502') ||
-          rawMsg.toLowerCase().includes('starting up') ||
-          rawMsg.toLowerCase().includes('starting');
+          rawMsg.toLowerCase().includes('starting up');
 
         const displayMsg = isWarmup
-          ? WARMUP_MSG
+          ? '⚡ AI backend is warming up — please resend your message in ~30 seconds. (This only happens after periods of inactivity.)'
           : `Error: ${rawMsg || 'Failed to get response'}`;
 
         setMessages((prev) => {
@@ -106,13 +99,6 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
           };
           return updated;
         });
-
-        // Auto-retry on warmup after 20 seconds
-        if (isWarmup) {
-          retryRef.current = setTimeout(() => {
-            handleSend(text);
-          }, 20_000);
-        }
       }
     },
     [messages, config.systemPrompt, model],

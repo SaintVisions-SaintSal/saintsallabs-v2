@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
       // OTP verification code
       await resend.emails.send({
         from: FROM,
-        reply_to: REPLY_TO,
+        replyTo: REPLY_TO,
         to: email,
         subject: 'Your SaintSal™ Labs Verification Code',
         html: supabaseVerifyEmailHTML(token),
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
         // Fire async — don't await so hook returns fast
         resend.emails.send({
           from: FROM,
-          reply_to: REPLY_TO,
+          replyTo: REPLY_TO,
           to: email,
           subject: 'Welcome to SaintSal™ Labs 🔥',
           html: welcomeEmailHTML(name, 'free'),
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
 
       await resend.emails.send({
         from: FROM,
-        reply_to: REPLY_TO,
+        replyTo: REPLY_TO,
         to: email,
         subject: 'Your SaintSal™ Labs Sign-In Link',
         html: magicLinkHTML(confirmUrl),
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
 
       await resend.emails.send({
         from: FROM,
-        reply_to: REPLY_TO,
+        replyTo: REPLY_TO,
         to: email,
         subject: 'Reset Your SaintSal™ Labs Password',
         html: recoveryHTML(confirmUrl),
@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
 
       await resend.emails.send({
         from: FROM,
-        reply_to: REPLY_TO,
+        replyTo: REPLY_TO,
         to: email,
         subject: "You've been invited to SaintSal™ Labs",
         html: magicLinkHTML(confirmUrl),

@@ -11,7 +11,7 @@ export async function sendWelcomeEmail(to: string, name: string, tier: string) {
   if (!process.env.RESEND_API_KEY) return
   await resend.emails.send({
     from: FROM,
-    reply_to: REPLY_TO,
+    replyTo: REPLY_TO,
     to,
     subject: tier === 'free'
       ? 'Welcome to SaintSal™ Labs — Your Account Is Live'
@@ -25,7 +25,7 @@ export async function sendVerifyEmail(to: string, otpCode: string) {
   if (!process.env.RESEND_API_KEY) return
   await resend.emails.send({
     from: FROM,
-    reply_to: REPLY_TO,
+    replyTo: REPLY_TO,
     to,
     subject: 'Your SaintSal™ Labs Verification Code',
     html: supabaseVerifyEmailHTML(otpCode),
@@ -37,7 +37,7 @@ export async function sendSnapshotEmail(to: string, name: string, snapshotKey: s
   if (!process.env.RESEND_API_KEY) return
   await resend.emails.send({
     from: FROM,
-    reply_to: REPLY_TO,
+    replyTo: REPLY_TO,
     to,
     subject: 'Your SaintSal™ Snapshot Is Being Deployed',
     html: snapshotPurchasedEmailHTML(name, snapshotKey),

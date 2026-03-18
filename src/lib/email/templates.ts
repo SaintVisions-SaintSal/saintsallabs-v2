@@ -6,7 +6,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://saintsallabs.com';
 const GOLD = '#D4AF37';
 const BG = '#0a0a0a';
 const CARD = '#111111';
-const TEXT = '#e5e5e5';
+const TEXT = '#e5e5e5'; // eslint-disable-line @typescript-eslint/no-unused-vars
 const MUTED = '#888888';
 
 const TIER_CONFIG: Record<string, { label: string; price: string; credits: string; features: string[] }> = {

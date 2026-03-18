@@ -45,7 +45,7 @@ export interface MeteringResult {
 export async function checkAndMeter(userId: string): Promise<MeteringResult> {
   const { data: profile, error } = await adminSupabase
     .from('profiles')
-    .select('tier, compute_tier, monthly_requests, request_limit, last_request_reset')
+    .select('tier, compute_tier, monthly_requests, request_limit, last_request_reset, billing_cycle_start')
     .eq('id', userId)
     .single()
 
@@ -57,12 +57,20 @@ export async function checkAndMeter(userId: string): Promise<MeteringResult> {
   const compute_tier = profile.compute_tier || TIER_CONFIG[tier]?.compute_tier || 'mini'
   const request_limit = profile.request_limit ?? TIER_CONFIG[tier]?.request_limit ?? 50
 
-  // Reset monthly counter if we've rolled into a new month
-  const lastReset = profile.last_request_reset ? new Date(profile.last_request_reset) : new Date(0)
+  // Reset on 30-day rolling window anchored to billing_cycle_start (not calendar month).
+  // Free users with no billing_cycle_start fall back to last_request_reset as anchor.
+  // This prevents revenue leakage: a user billed on the 15th resets on the 15th, not the 1st.
   const now = new Date()
+  const lastReset = profile.last_request_reset
+    ? new Date(profile.last_request_reset)
+    : new Date(0)
   let monthly_requests = profile.monthly_requests || 0
 
-  if (lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
+  const daysSinceReset = Math.floor(
+    (now.getTime() - lastReset.getTime()) / (1000 * 60 * 60 * 24)
+  )
+
+  if (daysSinceReset >= 30) {
     monthly_requests = 0
     await adminSupabase.from('profiles').update({
       monthly_requests: 0,

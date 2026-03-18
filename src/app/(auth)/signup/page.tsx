@@ -8,6 +8,11 @@ import { createClient } from '@/lib/supabase/client';
 
 type Step = 'form' | 'verify';
 
+// Always route back to THIS platform — saintsallabs.com owns its own auth flow
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ??
+  (typeof window !== 'undefined' ? window.location.origin : 'https://saintsallabs.com');
+
 export default function SignUpPage() {
   const [name, setName]           = useState('');
   const [email, setEmail]         = useState('');
@@ -34,7 +39,7 @@ export default function SignUpPage() {
       password,
       options: {
         data: { name: name.trim() || undefined },
-        emailRedirectTo: `${window.location.origin}/callback`,
+        emailRedirectTo: `${APP_URL}/callback`,
       },
     });
 
@@ -74,7 +79,7 @@ export default function SignUpPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/callback` },
+      options: { redirectTo: `${APP_URL}/callback` },
     });
   }
 

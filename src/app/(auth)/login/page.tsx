@@ -8,6 +8,11 @@ import { createClient } from '@/lib/supabase/client';
 
 type Step = 'form' | 'reset-sent';
 
+// Always route back to THIS platform — saintsallabs.com owns its own auth flow
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ??
+  (typeof window !== 'undefined' ? window.location.origin : 'https://saintsallabs.com');
+
 export default function LoginPage() {
   const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
@@ -45,7 +50,7 @@ export default function LoginPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/callback` },
+      options: { redirectTo: `${APP_URL}/callback` },
     });
   }
 
@@ -58,7 +63,7 @@ export default function LoginPage() {
     setError(null);
     const supabase = createClient();
     await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/callback?next=/reset-password`,
+      redirectTo: `${APP_URL}/callback?next=/reset-password`,
     });
     setLoading(false);
     setStep('reset-sent');

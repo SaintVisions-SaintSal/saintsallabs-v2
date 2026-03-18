@@ -1,5 +1,8 @@
 /* ─── SaintSal Labs — Branded Email Templates ──────────────── */
+/* APP_URL always resolves to saintsallabs.com — never saintsal.ai  */
+/* app.saintsal.ai is GHL white-label CRM only — intentionally kept */
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://saintsallabs.com';
 const GOLD = '#D4AF37';
 const BG = '#0a0a0a';
 const CARD = '#111111';
@@ -142,7 +145,7 @@ export function welcomeEmailHTML(name: string, tier: string): string {
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;">
       ${[
         ['1', 'Your GHL subaccount is being built', 'Check your inbox — you\'ll receive an invitation email to set your login at <strong style="color:white;">app.saintsal.ai</strong>'],
-        ['2', 'Your SAL Labs account is live', 'Log in now at <a href="https://saintsallabs.com/login" style="color:' + GOLD + ';text-decoration:none;">saintsallabs.com</a> with the email you used to purchase'],
+        ['2', 'Your SAL Labs account is live', `Log in now at <a href="${APP_URL}/login" style="color:${GOLD};text-decoration:none;">saintsallabs.com</a> with the email you used to purchase`],
       ].map(([n, title, desc]) => `
         <div style="background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:18px 20px;display:flex;gap:14px;">
           <div style="width:28px;height:28px;background:linear-gradient(135deg,${GOLD},#8A7129);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#080808;flex-shrink:0;line-height:28px;text-align:center;">${n}</div>
@@ -189,7 +192,7 @@ export function welcomeEmailHTML(name: string, tier: string): string {
 
     <!-- CTA BUTTONS -->
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;">
-      <a href="https://saintsallabs.com/login" style="background:linear-gradient(135deg,${GOLD},#8A7129);color:#080808;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:800;letter-spacing:1px;display:inline-block;">
+      <a href="${APP_URL}/login" style="background:linear-gradient(135deg,${GOLD},#8A7129);color:#080808;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:800;letter-spacing:1px;display:inline-block;">
         Open SAL Labs →
       </a>
       ${tier !== 'free' ? `<a href="https://app.saintsal.ai" style="background:transparent;color:${GOLD};text-decoration:none;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:800;letter-spacing:1px;border:1px solid rgba(212,175,55,0.3);display:inline-block;">

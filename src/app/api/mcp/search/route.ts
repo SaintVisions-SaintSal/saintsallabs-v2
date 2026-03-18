@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest } from 'next/server'
 import { validateRequest, gatewayResponse, handleOptions } from '@/lib/gateway-auth'
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
     if (provider === 'exa')       return runExa(query, limit)
     if (provider === 'tavily')    return runTavily(query, limit)
-    if (provider === 'perplexity') return runPerplexity(query, limit)
+    if (provider === 'perplexity') return runPerplexity(query)
 
     return gatewayResponse({ error: `Unknown provider: ${provider}` }, 400)
 
@@ -94,7 +95,7 @@ async function runTavily(query: string, limit: number) {
   return gatewayResponse({ ok: true, query, results, provider: 'tavily', count: results.length })
 }
 
-async function runPerplexity(query: string, limit: number) {
+async function runPerplexity(query: string) {
   const PERP_KEY = process.env.PERPLEXITY_API_KEY
   if (!PERP_KEY) return gatewayResponse({ error: 'PERPLEXITY_API_KEY not configured' }, 503)
 

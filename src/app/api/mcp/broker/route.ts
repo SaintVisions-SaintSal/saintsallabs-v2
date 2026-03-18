@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest } from 'next/server'
 import { validateRequest, gatewayResponse, handleOptions } from '@/lib/gateway-auth'
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       }
 
       case 'analyze_deal': {
-        const { purchasePrice, noi, grossRent, expenses, downPayment, interestRate, loanTerm, annualDebtService } = payload
+        const { purchasePrice, noi, grossRent, expenses, downPayment, annualDebtService } = payload
 
         const capRate = ((noi / purchasePrice) * 100).toFixed(2)
         const annualGrossRent = (grossRent || 0) * 12
@@ -121,8 +122,9 @@ export async function POST(req: NextRequest) {
         return gatewayResponse({ error: `Unknown action: ${action}` }, 400)
     }
 
-  } catch (err: any) {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
     console.error('[MCP /broker]', err)
-    return gatewayResponse({ error: 'Broker request failed', detail: err.message }, 500)
+    return gatewayResponse({ error: 'Broker request failed', detail: msg }, 500)
   }
 }

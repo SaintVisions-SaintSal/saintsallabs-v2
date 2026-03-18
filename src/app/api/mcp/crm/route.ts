@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest } from 'next/server'
 import { validateRequest, gatewayResponse, handleOptions } from '@/lib/gateway-auth'
 
@@ -77,8 +78,9 @@ export async function POST(req: NextRequest) {
         return gatewayResponse({ error: `Unknown action: ${action}` }, 400)
     }
 
-  } catch (err: any) {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
     console.error('[MCP /crm]', err)
-    return gatewayResponse({ error: 'CRM request failed', detail: err.message }, 500)
+    return gatewayResponse({ error: 'CRM request failed', detail: msg }, 500)
   }
 }

@@ -1,13 +1,22 @@
-import { NextResponse } from 'next/server';
-
-export const runtime = 'edge';
+import { adminSupabase } from '@/lib/sal-admin'
 
 export async function GET() {
-  return NextResponse.json({
-    status: 'ok',
-    app: 'SaintSal™ Labs v2',
-    version: '2.0.0',
-    backend: process.env.NEXT_PUBLIC_API_URL,
+  const start = Date.now()
+
+  const { error } = await adminSupabase
+    .from('profiles')
+    .select('id')
+    .limit(1)
+
+  const dbOk = !error
+  const latency = Date.now() - start
+
+  return Response.json({
+    status: dbOk ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
-  });
+    platform: 'saintsallabs.com',
+    db: dbOk ? 'connected' : error?.message,
+    latency_ms: latency,
+    version: process.env.npm_package_version ?? '1.0.0',
+  }, { status: dbOk ? 200 : 503 })
 }

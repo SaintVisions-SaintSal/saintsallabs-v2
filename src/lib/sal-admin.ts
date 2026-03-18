@@ -60,10 +60,9 @@ export async function checkAndMeter(userId: string): Promise<MeteringResult> {
   // Reset on 30-day rolling window anchored to billing_cycle_start (not calendar month).
   // Free users with no billing_cycle_start fall back to last_request_reset as anchor.
   // This prevents revenue leakage: a user billed on the 15th resets on the 15th, not the 1st.
+  const cycleStart = new Date(profile.billing_cycle_start ?? profile.last_request_reset ?? 0)
+  const lastReset  = profile.last_request_reset ? new Date(profile.last_request_reset) : cycleStart
   const now = new Date()
-  const lastReset = profile.last_request_reset
-    ? new Date(profile.last_request_reset)
-    : new Date(0)
   let monthly_requests = profile.monthly_requests || 0
 
   const daysSinceReset = Math.floor(

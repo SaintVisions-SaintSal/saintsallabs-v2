@@ -15,19 +15,17 @@ const stripe = { get: getStripe };
 /* ─── Real Stripe Price IDs ────────────────────────────────── */
 
 export const STRIPE_PRICES = {
-  // Monthly subscription tiers
-  free_monthly: 'price_1T5bkAL47U80vDLAslOm3HoX',
-  starter_monthly: 'price_1T5bkAL47U80vDLAaChP4Hqg',
-  pro_monthly: 'price_1T5bkBL47U80vDLALiVDkOgb',
-  teams_monthly: 'price_1T5bkCL47U80vDLANsCa647K',
-  enterprise_monthly: 'price_1T5bkDL47U80vDLANXWF33A7',
+  // ── Monthly subscription tiers ────────────────────────────
+  starter_monthly:    'price_1T7p1sL47U80vDLAgU2shcQO',  // $27/mo
+  pro_monthly:        'price_1T7p1tL47U80vDLAVC0N4N4J',  // $97/mo
+  teams_monthly:      'price_1T7p1uL47U80vDLA9QF62BKS',  // $297/mo
+  enterprise_monthly: 'price_1T7p1uL47U80vDLAR4Wk6uW0',  // $497/mo
 
-  // Annual subscription tiers
-  free_annual: 'price_1T7p1tL47U80vDLAnxtkrGV4',
-  starter_annual: 'price_1T7p1sL47U80vDLAYEEv8Kmg',
-  pro_annual: 'price_1T7p1tL47U80vDLAk5HK8YcR',
-  teams_annual: 'price_1T7p1uL47U80vDLAjlnLTuul',
-  enterprise_annual: 'price_1T7p1uL47U80vDLAk9UA0lnr',
+  // ── Annual subscription tiers ─────────────────────────────
+  starter_annual:     'price_1T7p1sL47U80vDLAYEEv8Kmg',
+  pro_annual:         'price_1T7p1tL47U80vDLAk5HK8YcR',
+  teams_annual:       'price_1T7p1uL47U80vDLAjlnLTuul',
+  enterprise_annual:  'price_1T7p1uL47U80vDLAk9UA0lnr',
 
   // Metered compute
   sal_mini_compute: 'price_1T5bkVL47U80vDLAHHAjXmJh',

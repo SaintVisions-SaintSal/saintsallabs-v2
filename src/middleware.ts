@@ -1,7 +1,16 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
-const PUBLIC_PATHS = ['/login', '/signup', '/callback'];
+// Marketing + legal pages — always public, no auth required
+const PUBLIC_PATHS = [
+  '/',
+  '/login',
+  '/signup',
+  '/callback',
+  '/privacy',
+  '/terms',
+  '/app-clip',
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -10,30 +19,45 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.includes('.') // static files like favicon.ico
+    pathname.includes('.')
   ) {
     return NextResponse.next();
   }
 
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isPublic = PUBLIC_PATHS.some((p) =>
+    p === '/' ? pathname === '/' : pathname.startsWith(p),
+  );
 
-  const { user, supabaseResponse } = await updateSession(request);
-
-  // Unauthenticated user on protected route → redirect to login
-  if (!user && !isPublic) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+  // If Supabase env vars aren't set, fail open (don't crash the whole site)
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return NextResponse.next();
   }
 
-  // Authenticated user on auth pages → redirect to app
-  if (user && isPublic) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/chat/search';
-    return NextResponse.redirect(url);
-  }
+  try {
+    const { user, supabaseResponse } = await updateSession(request);
 
-  return supabaseResponse;
+    // Unauthenticated on protected route → login
+    if (!user && !isPublic) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      return NextResponse.redirect(url);
+    }
+
+    // Authenticated on auth pages → app
+    if (user && (pathname === '/login' || pathname === '/signup')) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/chat/search';
+      return NextResponse.redirect(url);
+    }
+
+    return supabaseResponse;
+  } catch {
+    // Supabase unreachable — fail open so landing page still renders
+    return NextResponse.next();
+  }
 }
 
 export const config = {

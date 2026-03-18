@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import type { Message, Vertical } from '@/types';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { salStream } from '@/lib/ai/stream';
 import { useAppStore } from '@/stores/app-store';
+import { usePlanGate } from '@/hooks/use-plan-gate';
 import ChatMessages from './chat-messages';
 import InputBar from '@/components/layout/input-bar';
 
@@ -20,11 +22,23 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const { model } = useAppStore();
+  const gate = usePlanGate();
 
   const config = VERTICAL_CONFIG[vertical];
 
   const handleSend = useCallback(
     async (text: string) => {
+      // ── Plan gate check ──────────────────────────────────
+      const gateMsg = gate.checkMessage();
+      if (gateMsg) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'user', content: text },
+          { role: 'assistant', content: `🔒 ${gateMsg}`, streaming: false },
+        ]);
+        return;
+      }
+
       // Abort any in-flight stream
       abortRef.current?.abort();
       const controller = new AbortController();
@@ -64,6 +78,7 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
             });
           },
           onDone: () => {
+            gate.recordMessage();
             setMessages((prev) => {
               const updated = [...prev];
               const last = updated[updated.length - 1];
@@ -104,8 +119,24 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
     [messages, config.systemPrompt, model],
   );
 
+  const isFreeLimited = gate.tier === 'free' && gate.dailyRemaining !== 'unlimited';
+  const remaining = gate.dailyRemaining as number;
+
   return (
     <>
+      {/* Free tier usage bar */}
+      {isFreeLimited && (
+        <div className="flex items-center justify-between border-b border-sal-border bg-sal-surface2 px-4 py-1.5">
+          <span className="text-[11px] text-sal-text-muted">
+            <span className="font-semibold text-sal-text">{remaining}</span> free messages remaining today
+          </span>
+          <Link href="/pricing"
+            className="rounded bg-sal-gold/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sal-gold hover:bg-sal-gold/25">
+            Upgrade
+          </Link>
+        </div>
+      )}
+
       <ChatMessages
         messages={messages}
         vertical={vertical}

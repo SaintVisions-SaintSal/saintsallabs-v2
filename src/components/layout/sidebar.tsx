@@ -25,15 +25,18 @@ import {
   CreditCard,
   User,
   X,
+  Lock,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { NAV } from '@/config/navigation';
 import { useAppStore } from '@/stores/app-store';
+import { usePlanGate } from '@/hooks/use-plan-gate';
 import { cn } from '@/lib/utils/cn';
 
 /* ─── Icon lookup ──────────────────────────────────────────── */
 
 const ICONS: Record<string, LucideIcon> = {
+  Lock,
   LayoutDashboard,
   Search,
   Trophy,
@@ -60,6 +63,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { activePage, setActivePage, sidebarOpen, toggleSidebar, user } =
     useAppStore();
+  const gate = usePlanGate();
 
   const handleNav = useCallback(
     (id: string) => {
@@ -124,38 +128,45 @@ export default function Sidebar() {
               </div>
               {section.items.map((item) => {
                 const Icon = ICONS[item.icon];
-                const isActive =
-                  activePage === item.id ||
-                  pathname === item.href;
+                const isActive = activePage === item.id || pathname === item.href;
+                const locked = !gate.canAccessNav(item.id);
+                const href = locked ? '/pricing' : item.href;
 
                 return (
                   <Link
                     key={item.id}
-                    href={item.href}
-                    onClick={() => handleNav(item.id)}
+                    href={href}
+                    onClick={() => !locked && handleNav(item.id)}
+                    title={locked ? `Requires upgrade — click to see plans` : undefined}
                     className={cn(
                       'nav-btn group flex w-full items-center gap-2 rounded-md px-2 py-[5px] text-xs',
-                      isActive
-                        ? 'bg-[#1C1C26] font-medium text-sal-gold'
-                        : 'text-sal-text-muted hover:bg-[#161620] hover:text-sal-text',
+                      locked
+                        ? 'cursor-pointer text-sal-text-muted/50 hover:bg-[#161620] hover:text-sal-text-muted'
+                        : isActive
+                          ? 'bg-[#1C1C26] font-medium text-sal-gold'
+                          : 'text-sal-text-muted hover:bg-[#161620] hover:text-sal-text',
                     )}
                   >
                     {Icon && (
                       <Icon
                         size={14}
                         className={cn(
-                          isActive
-                            ? 'text-sal-gold'
-                            : 'text-sal-text-muted group-hover:text-sal-text',
+                          locked
+                            ? 'opacity-40'
+                            : isActive
+                              ? 'text-sal-gold'
+                              : 'text-sal-text-muted group-hover:text-sal-text',
                         )}
                       />
                     )}
-                    <span className="truncate">{item.label}</span>
-                    {item.pro && (
+                    <span className={cn('truncate', locked && 'opacity-40')}>{item.label}</span>
+                    {locked ? (
+                      <Lock size={9} className="ml-auto opacity-30" />
+                    ) : item.pro ? (
                       <span className="ml-auto rounded bg-sal-gold/15 px-1 py-px text-[8px] font-bold uppercase text-sal-gold">
                         PRO
                       </span>
-                    )}
+                    ) : null}
                   </Link>
                 );
               })}

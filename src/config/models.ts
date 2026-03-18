@@ -144,10 +144,11 @@ export const SAL_TIERS: SalTier[] = [
   },
 ];
 
+// Must match PLAN_LIMITS[tier].salTier in src/config/plans.ts
 export const PLAN_MODEL_ACCESS: Record<PlanTier, string> = {
-  free: 'mini',
-  starter: 'pro',
-  pro: 'max',
-  teams: 'max-fast',
+  free:       'mini',    // basic only — 25 msg/day
+  starter:    'mini',    // unlimited usage but basic models only
+  pro:        'max',     // full model access — give them the world
+  teams:      'max-fast',
   enterprise: 'max-fast',
 };

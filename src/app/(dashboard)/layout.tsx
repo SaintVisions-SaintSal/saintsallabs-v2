@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/sidebar';
 import Header from '@/components/layout/header';
@@ -16,6 +16,14 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { activePage } = useAppStore();
+
+  // Silent warmup: ping the SAL engine so it's awake for first user message
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (apiUrl) {
+      fetch(`${apiUrl}/health`, { signal: AbortSignal.timeout(30_000) }).catch(() => {});
+    }
+  }, []);
 
   // Chat pages render their own InputBar via ChatContainer,
   // so hide the layout-level InputBar on /chat/* routes.

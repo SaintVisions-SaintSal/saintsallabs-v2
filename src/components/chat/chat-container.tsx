@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Message, Vertical } from '@/types';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { salStream } from '@/lib/ai/stream';
 import { useAppStore } from '@/stores/app-store';
 import ChatMessages from './chat-messages';
 import InputBar from '@/components/layout/input-bar';
+
+const WARMUP_MSG = '⚡ AI backend is warming up — retrying in a moment…';
 
 /* ─── Props ────────────────────────────────────────────────── */
 
@@ -19,9 +21,13 @@ interface ChatContainerProps {
 export default function ChatContainer({ vertical }: ChatContainerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const abortRef = useRef<AbortController | null>(null);
+  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { model } = useAppStore();
 
   const config = VERTICAL_CONFIG[vertical];
+
+  // Cleanup retry timer on unmount
+  useEffect(() => () => { if (retryRef.current) clearTimeout(retryRef.current); }, []);
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -78,19 +84,35 @@ export default function ChatContainer({ vertical }: ChatContainerProps) {
       } catch (err) {
         if ((err as Error).name === 'AbortError') return;
 
-        // Show error in the assistant message
+        const rawMsg = (err as Error).message ?? '';
+        // Detect Render cold-start / 503 — auto-retry once after 20s
+        const isWarmup =
+          rawMsg.includes('503') ||
+          rawMsg.includes('502') ||
+          rawMsg.toLowerCase().includes('starting up') ||
+          rawMsg.toLowerCase().includes('starting');
+
+        const displayMsg = isWarmup
+          ? WARMUP_MSG
+          : `Error: ${rawMsg || 'Failed to get response'}`;
+
         setMessages((prev) => {
           const updated = [...prev];
           const last = updated[updated.length - 1];
           updated[updated.length - 1] = {
             ...last,
-            content:
-              last.content ||
-              `Error: ${(err as Error).message ?? 'Failed to get response'}`,
+            content: last.content || displayMsg,
             streaming: false,
           };
           return updated;
         });
+
+        // Auto-retry on warmup after 20 seconds
+        if (isWarmup) {
+          retryRef.current = setTimeout(() => {
+            handleSend(text);
+          }, 20_000);
+        }
       }
     },
     [messages, config.systemPrompt, model],

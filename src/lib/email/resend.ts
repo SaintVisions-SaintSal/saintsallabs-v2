@@ -3,8 +3,8 @@ import { welcomeEmailHTML, supabaseVerifyEmailHTML, snapshotPurchasedEmailHTML }
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = 'SaintSal™ Labs <noreply@saintsallabs.com>'
-const REPLY_TO = 'support@saintsallabs.com'
+const FROM = 'SaintSal™ Labs <support@cookin.io>'
+const REPLY_TO = 'support@cookin.io'
 
 /* ─── Send welcome email on signup / upgrade ─── */
 export async function sendWelcomeEmail(to: string, name: string, tier: string) {

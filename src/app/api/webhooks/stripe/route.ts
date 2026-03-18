@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { adminSupabase, PRICE_TO_TIER, TIER_CONFIG } from '@/lib/sal-admin'
+import { sendWelcomeEmail } from '@/lib/email/resend'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2026-02-25.clover',
@@ -78,6 +79,16 @@ export async function POST(req: NextRequest) {
         } else {
           await updateProfileByCustomer(customerId, tier, subId)
         }
+        // Send welcome/upgrade email
+        try {
+          const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+          const email = customer.email || ''
+          const name  = (customer.name || email).split('@')[0]
+          if (email) await sendWelcomeEmail(email, name, tier)
+        } catch (emailErr) {
+          console.warn('[webhook] welcome email failed:', emailErr)
+        }
+
         console.log(`[webhook] checkout.completed → tier=${tier} customer=${customerId}`)
         break
       }

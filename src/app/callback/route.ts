@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { adminSupabase, TIER_CONFIG } from '@/lib/sal-admin'
+import { sendWelcomeEmail } from '@/lib/email/resend'
 
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url)
@@ -45,6 +46,12 @@ export async function GET(req: NextRequest) {
         onConflict: 'id',
         ignoreDuplicates: true,
       })
+
+      // Send welcome email to new users (ignoreDuplicates means existing users won't re-trigger)
+      try {
+        const name = user.user_metadata?.full_name || user.user_metadata?.name || ''
+        if (user.email) await sendWelcomeEmail(user.email, name, 'free')
+      } catch {}
 
       return NextResponse.redirect(`${origin}${next}`)
     }

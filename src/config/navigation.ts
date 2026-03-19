@@ -23,6 +23,7 @@ export const NAV: NavSection[] = [
       { id: 'finance', label: 'Finance', icon: 'TrendingUp', href: '/finance' },
       { id: 'realestate', label: 'Real Estate', icon: 'Building2', href: '/realestate' },
       { id: 'medical', label: 'Medical', icon: 'HeartPulse', href: '/medical' },
+      { id: 'cookin-cards', label: 'CookinCards', icon: 'ChefHat', href: '/cookin-cards' },
     ],
   },
   {

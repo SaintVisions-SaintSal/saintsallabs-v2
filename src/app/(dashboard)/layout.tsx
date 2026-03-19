@@ -6,6 +6,7 @@ import Sidebar from '@/components/layout/sidebar';
 import Header from '@/components/layout/header';
 import Ticker from '@/components/layout/ticker';
 import InputBar from '@/components/layout/input-bar';
+import BottomNav from '@/components/layout/bottom-nav';
 import { useAppStore } from '@/stores/app-store';
 
 export default function DashboardLayout({
@@ -54,19 +55,22 @@ export default function DashboardLayout({
         <Header />
         <Ticker />
 
-        {/* Main content area */}
+        {/* Main content area — pb-14 keeps content above bottom nav */}
         <main className="flex flex-1 flex-col overflow-hidden">
           {/* Chat pages manage their own internal scroll; non-chat pages scroll here */}
           <div className={
             isChatPage
-              ? 'relative flex flex-1 flex-col overflow-hidden'
-              : 'relative flex-1 overflow-y-auto'
+              ? 'relative flex flex-1 flex-col overflow-hidden pb-14'
+              : 'relative flex-1 overflow-y-auto pb-14'
           }>
             {children}
           </div>
           {!isChatPage && <InputBar onSend={handleSend} />}
         </main>
       </div>
+
+      {/* Bottom nav — visible on all screen sizes, offset on desktop */}
+      <BottomNav />
     </div>
   );
 }

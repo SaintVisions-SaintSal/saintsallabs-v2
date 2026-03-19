@@ -26,6 +26,7 @@ import {
   User,
   X,
   Lock,
+  ChefHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { NAV } from '@/config/navigation';
@@ -55,6 +56,7 @@ const ICONS: Record<string, LucideIcon> = {
   Plug,
   CreditCard,
   User,
+  ChefHat,
 };
 
 /* ─── Sidebar Component ────────────────────────────────────── */

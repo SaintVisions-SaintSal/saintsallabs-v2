@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
+    event = getStripe().webhooks.constructEvent(body, sig, webhookSecret)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[webhook] signature failed:', msg)
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
         let priceId = session.metadata?.price_id
         if (!priceId && subId) {
-          const sub = await stripe.subscriptions.retrieve(subId)
+          const sub = await getStripe().subscriptions.retrieve(subId)
           priceId = sub.items.data[0]?.price?.id
         }
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
         }
         // Send welcome/upgrade email
         try {
-          const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+          const customer = await getStripe().customers.retrieve(customerId) as Stripe.Customer
           const email = customer.email || ''
           const name  = (customer.name || email).split('@')[0]
           if (email) await sendWelcomeEmail(email, name, tier)

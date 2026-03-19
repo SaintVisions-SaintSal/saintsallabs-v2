@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { adminSupabase, PRICE_TO_TIER, TIER_CONFIG } from '@/lib/sal-admin'
 import { sendWelcomeEmail } from '@/lib/email/resend'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_placeholder', {
   apiVersion: '2026-02-25.clover',
 })
 

@@ -5,9 +5,11 @@ import { createCheckoutSession } from '@/lib/stripe/checkout'
 import { adminSupabase } from '@/lib/sal-admin'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2026-02-25.clover',
-})
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_placeholder', {
+    apiVersion: '2026-02-25.clover',
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     if (!customerId) {
       // Create Stripe customer and save back to profiles
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: profile?.email || user.email || '',
         name: profile?.full_name || '',
         metadata: { supabase_user_id: user.id, platform: 'saintsallabs.com' },

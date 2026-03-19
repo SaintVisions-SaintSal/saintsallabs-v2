@@ -112,14 +112,8 @@ export function canUseFeature(tier: PlanTier, feature: keyof Pick<PlanLimits,
 /* ─── Nav items that require a specific tier ─────────────────── */
 
 export const NAV_TIER_REQUIREMENTS: Record<string, PlanTier> = {
-  'voice-ai':       'pro',
-  'integrations':   'starter',
-  'career-suite':   'pro',
-  'builder':        'starter',
-  'social-studio':  'starter',
-  'domains':        'starter',
-  'business-center':'starter',
-  'business-plan':  'starter',
+  'voice-ai':     'pro',
+  'career-suite': 'pro',
 };
 
 export function minTierFor(navId: string): PlanTier | null {

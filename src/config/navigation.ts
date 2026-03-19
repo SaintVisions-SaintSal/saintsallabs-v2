@@ -27,7 +27,7 @@ export const NAV: NavSection[] = [
     ],
   },
   {
-    title: 'BUILD',
+    title: 'CREATE',
     items: [
       { id: 'builder', label: 'Builder', icon: 'Code2', href: '/builder' },
       { id: 'social-studio', label: 'Social Studio', icon: 'Share2', href: '/social-studio' },
@@ -46,6 +46,7 @@ export const NAV: NavSection[] = [
   {
     title: 'SYSTEM',
     items: [
+      { id: 'my-sal', label: 'My SAL', icon: 'User', href: '/my-sal' },
       { id: 'integrations', label: 'Integrations', icon: 'Plug', href: '/integrations' },
       { id: 'pricing', label: 'Pricing', icon: 'CreditCard', href: '/pricing' },
       { id: 'account', label: 'Account', icon: 'User', href: '/account' },

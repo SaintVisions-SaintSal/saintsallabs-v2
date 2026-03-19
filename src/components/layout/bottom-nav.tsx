@@ -5,9 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
-  Search, Code2, MoreHorizontal, X, Plus, Lock,
+  Search, Code2, Share2, MoreHorizontal, X, Plus, Lock,
   LayoutDashboard, Trophy, Newspaper, Cpu, TrendingUp,
-  Building2, HeartPulse, Share2, Globe, Briefcase,
+  Building2, HeartPulse, Globe, Briefcase,
   GraduationCap, Mic, FileText, Plug, CreditCard, User, ChefHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -28,9 +28,10 @@ export default function BottomNav() {
   const { setActivePage, activePage } = useAppStore();
   const gate = usePlanGate();
 
-  const isSearch  = pathname.startsWith('/chat/search') || pathname.includes('/search');
+  const isSearch  = pathname.startsWith('/chat/search') || pathname === '/search';
   const isBuilder = pathname.startsWith('/builder');
-  const isSal     = pathname === '/dashboard' || activePage === 'dashboard';
+  const isSocial  = pathname.startsWith('/social');
+  const isMySal   = pathname.startsWith('/my-sal') || activePage === 'my-sal';
 
   return (
     <>
@@ -67,6 +68,46 @@ export default function BottomNav() {
             <span className="text-[10px] font-medium">Builder</span>
           </Link>
 
+          {/* Social */}
+          <Link
+            href="/social-studio"
+            onClick={() => { setActivePage('social-studio'); setMoreOpen(false); }}
+            className={cn(
+              'flex flex-1 flex-col items-center gap-1 px-2 py-2.5 transition-colors',
+              isSocial ? 'text-sal-gold' : 'text-sal-text-muted hover:text-sal-text',
+            )}
+          >
+            <Share2 size={20} strokeWidth={isSocial ? 2.5 : 1.8} />
+            <span className="text-[10px] font-medium">Social</span>
+          </Link>
+
+          {/* My SAL */}
+          <Link
+            href="/my-sal"
+            onClick={() => { setActivePage('my-sal'); setMoreOpen(false); }}
+            className="flex flex-1 flex-col items-center gap-0.5 px-2 py-2 transition-opacity hover:opacity-80"
+          >
+            <div
+              className={cn(
+                'h-7 w-7 overflow-hidden rounded-full transition-all',
+                isMySal
+                  ? 'ring-2 ring-sal-gold shadow-[0_0_10px_rgba(212,175,55,0.4)]'
+                  : 'ring-1 ring-sal-border/40',
+              )}
+            >
+              <Image
+                src="/sal-logo-main.png"
+                alt="My SAL"
+                width={28}
+                height={28}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <span className={cn('text-[10px] font-semibold', isMySal ? 'text-sal-gold' : 'text-sal-text-muted')}>
+              My SAL
+            </span>
+          </Link>
+
           {/* More */}
           <button
             onClick={() => setMoreOpen((v) => !v)}
@@ -78,33 +119,6 @@ export default function BottomNav() {
             <MoreHorizontal size={20} strokeWidth={moreOpen ? 2.5 : 1.8} />
             <span className="text-[10px] font-medium">More</span>
           </button>
-
-          {/* Sal™ Favorite */}
-          <Link
-            href="/dashboard"
-            onClick={() => { setActivePage('dashboard'); setMoreOpen(false); }}
-            className="flex flex-1 flex-col items-center gap-0.5 px-2 py-2 transition-opacity hover:opacity-80"
-          >
-            <div
-              className={cn(
-                'h-8 w-8 overflow-hidden rounded-xl transition-all',
-                isSal
-                  ? 'ring-2 ring-sal-gold shadow-[0_0_10px_rgba(212,175,55,0.4)]'
-                  : 'ring-1 ring-sal-border/40',
-              )}
-            >
-              <Image
-                src="/images/sal-logo-main.png"
-                alt="SaintSal™"
-                width={32}
-                height={32}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <span className={cn('text-[10px] font-semibold', isSal ? 'text-sal-gold' : 'text-sal-text-muted')}>
-              Sal™
-            </span>
-          </Link>
 
         </div>
       </nav>
@@ -134,7 +148,7 @@ export default function BottomNav() {
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-2 pb-1">
           <div className="flex items-center gap-2">
-            <Image src="/images/sal-logo-main.png" alt="SaintSal™" width={22} height={22} className="rounded-lg" />
+            <Image src="/sal-logo-main.png" alt="SaintSal™" width={22} height={22} className="rounded-lg" />
             <span className="text-sm font-bold text-sal-text">SaintSal™ Labs</span>
           </div>
           <button onClick={() => setMoreOpen(false)} className="rounded-lg p-1.5 text-sal-text-muted hover:text-sal-text">

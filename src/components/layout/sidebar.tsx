@@ -100,11 +100,11 @@ export default function Sidebar() {
         {/* ── Logo ─────────────────────────────────────────── */}
         <div className="relative flex items-center justify-center px-3 pb-2 pt-4">
           <Image
-            src="/images/logo-square.jpg"
+            src="/logo-wide.jpg"
             alt="SaintSal Labs"
-            width={150}
-            height={150}
-            className="rounded-lg"
+            width={180}
+            height={60}
+            className="object-contain"
             priority
           />
           {/* Mobile close */}

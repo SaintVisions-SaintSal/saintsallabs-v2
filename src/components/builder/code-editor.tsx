@@ -7,59 +7,43 @@ import { cn } from '@/lib/utils/cn';
 
 /* ─── Syntax highlighting ──────────────────────────────────── */
 
+/* ── colour constants so Tailwind purge doesn't matter ─────── */
+const C = {
+  comment: 'color:#666;font-style:italic',
+  string:  'color:#22C55E',
+  tag:     'color:#D4AF37',
+  keyword: 'color:#818CF8',
+  number:  'color:#EC4899',
+};
+
 function highlightLine(line: string, lang: string): string {
   let s = line
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  // Comments: // ... and /* ... */
-  s = s.replace(
-    /(\/\/.*$)/gm,
-    '<span class="text-sal-text-muted italic">$1</span>',
-  );
-  s = s.replace(
-    /(\/\*[\s\S]*?\*\/)/g,
-    '<span class="text-sal-text-muted italic">$1</span>',
-  );
+  // Comments
+  s = s.replace(/(\/\/.*$)/gm, `<span style="${C.comment}">$1</span>`);
+  s = s.replace(/(\/\*[\s\S]*?\*\/)/g, `<span style="${C.comment}">$1</span>`);
 
-  // Strings (double-quoted then single-quoted then backtick)
-  s = s.replace(
-    /(&quot;|")((?:\\.|(?!\1).)*?)\1/g,
-    '<span class="text-sal-green">"$2"</span>',
-  );
-  s = s.replace(
-    /(')((?:\\.|[^'])*?)(')/g,
-    '<span class="text-sal-green">$1$2$3</span>',
-  );
-  s = s.replace(
-    /(`)((?:\\.|[^`])*?)(`)/g,
-    '<span class="text-sal-green">$1$2$3</span>',
-  );
+  // Strings
+  s = s.replace(/(&quot;|")((?:\\.|(?!\1).)*?)\1/g, `<span style="${C.string}">"$2"</span>`);
+  s = s.replace(/(')((?:\\.|[^'])*?)(')/g, `<span style="${C.string}">$1$2$3</span>`);
+  s = s.replace(/(`)((?:\\.|[^`])*?)(`)/g, `<span style="${C.string}">$1$2$3</span>`);
 
   // HTML tags
-  if (
-    lang === 'html' ||
-    lang === 'javascript' ||
-    lang === 'typescript'
-  ) {
-    s = s.replace(
-      /(&lt;\/?)([\w.-]+)/g,
-      '$1<span class="text-sal-gold">$2</span>',
-    );
+  if (lang === 'html' || lang === 'javascript' || lang === 'typescript') {
+    s = s.replace(/(&lt;\/?)([\w.-]+)/g, `$1<span style="${C.tag}">$2</span>`);
   }
 
   // Keywords
   s = s.replace(
     /\b(const|let|var|function|return|import|export|from|if|else|for|while|switch|case|break|default|class|extends|new|this|typeof|async|await|try|catch|throw|interface|type|enum)\b/g,
-    '<span class="text-sal-purple">$1</span>',
+    `<span style="${C.keyword}">$1</span>`,
   );
 
   // Numbers
-  s = s.replace(
-    /\b(\d+\.?\d*)\b/g,
-    '<span class="text-sal-pink">$1</span>',
-  );
+  s = s.replace(/\b(\d+\.?\d*)\b/g, `<span style="${C.number}">$1</span>`);
 
   return s;
 }

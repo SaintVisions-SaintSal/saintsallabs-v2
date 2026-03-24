@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -14,6 +15,7 @@ const APP_URL =
   (typeof window !== 'undefined' ? window.location.origin : 'https://saintsallabs.com');
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
   const [showPw, setShowPw]       = useState(false);
@@ -41,7 +43,8 @@ export default function LoginPage() {
           : authError.message,
       );
     } else {
-      window.location.href = '/';
+      const next = searchParams.get('next') ?? '/';
+      window.location.href = next;
     }
   }
 

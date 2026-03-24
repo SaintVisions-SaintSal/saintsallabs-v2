@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -14,6 +15,7 @@ const APP_URL =
   (typeof window !== 'undefined' ? window.location.origin : 'https://saintsallabs.com');
 
 export default function SignUpPage() {
+  const searchParams = useSearchParams();
   const [name, setName]           = useState('');
   const [email, setEmail]         = useState('');
   const [password, setPassword]   = useState('');
@@ -70,7 +72,8 @@ export default function SignUpPage() {
     if (verifyError) {
       setError('Invalid or expired code. Check your email and try again.');
     } else {
-      window.location.href = '/';
+      const next = searchParams.get('next') ?? '/';
+      window.location.href = next;
     }
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import type { Message, Vertical } from '@/types';
 import { VERTICAL_CONFIG } from '@/config/verticals';
@@ -16,15 +16,56 @@ interface ChatContainerProps {
   vertical: Vertical;
 }
 
+/* ─── Persistence helpers ──────────────────────────────────── */
+
+const MAX_STORED_MESSAGES = 40; // per vertical
+
+function storageKey(vertical: string) {
+  return `sal_chat_${vertical}`;
+}
+
+function loadMessages(vertical: string): Message[] {
+  try {
+    const raw = localStorage.getItem(storageKey(vertical));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as Message[];
+    // Strip any mid-stream state that got persisted on a hard reload
+    return parsed.map((m) => ({ ...m, streaming: false }));
+  } catch {
+    return [];
+  }
+}
+
+function saveMessages(vertical: string, messages: Message[]) {
+  try {
+    // Only persist completed messages, keep list bounded
+    const completed = messages.filter((m) => !m.streaming);
+    const trimmed = completed.slice(-MAX_STORED_MESSAGES);
+    localStorage.setItem(storageKey(vertical), JSON.stringify(trimmed));
+  } catch {
+    // localStorage full or unavailable — silent fail
+  }
+}
+
 /* ─── ChatContainer Component ──────────────────────────────── */
 
 export default function ChatContainer({ vertical }: ChatContainerProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => loadMessages(vertical));
   const abortRef = useRef<AbortController | null>(null);
   const { model } = useAppStore();
   const gate = usePlanGate();
 
   const config = VERTICAL_CONFIG[vertical];
+
+  // Reload history when switching verticals
+  useEffect(() => {
+    setMessages(loadMessages(vertical));
+  }, [vertical]);
+
+  // Persist completed messages whenever they change
+  useEffect(() => {
+    saveMessages(vertical, messages);
+  }, [vertical, messages]);
 
   const handleSend = useCallback(
     async (text: string) => {

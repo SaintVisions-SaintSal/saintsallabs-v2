@@ -26,9 +26,10 @@ export function useAuth() {
         const profile: UserProfile = {
           id: data.id,
           email: data.email ?? email,
-          name: data.name ?? undefined,
+          name: data.full_name ?? data.name ?? undefined,
           avatar_url: data.avatar_url ?? undefined,
-          plan_tier: (data.plan_tier as PlanTier) ?? 'free',
+          // DB column is "tier", not "plan_tier" — was always returning undefined
+          plan_tier: ((data.tier ?? data.plan_tier) as PlanTier) ?? 'free',
           credits_remaining: data.credits_remaining ?? 999999,
           stripe_customer_id: data.stripe_customer_id ?? undefined,
         };
